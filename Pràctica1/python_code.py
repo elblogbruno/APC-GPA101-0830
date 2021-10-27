@@ -11,13 +11,10 @@
 # - #### Martí Simon Rojas - 1568180
 
 # # Apartat (C): Analitzant Dades
-# En aquest apartat analitzarem la nostra base de dades. Volem primer separar el input (X) del output (Y). En el nostre cas tenim 9 variables, de les quals la ultima es el nostre output, es a dir el resultat que volem obtenir del nostre model.
-
 
 from sklearn.datasets import make_regression
 import numpy as np
 import pandas as pd
-get_ipython().run_line_magic('matplotlib', 'notebook')
 from matplotlib import pyplot as plt
 import scipy.stats
 
@@ -73,7 +70,6 @@ for i in range(len(index)):
     plt.xlabel(index[i])
     plt.show()
 
-
 for i in range(len(index)):
     if i==len(index)-1:
         break
@@ -87,6 +83,7 @@ for i in range(len(index)):
 
 
 # Aquest histograma ens permet observar si presenta una distribució Gaussiana. Per exemple, el nostre atribut 0 presenta una distribució Gaussiana. També podem estudiar la correlació entre els diferents atributs per tal de saber si estan correlacionats entre ells. Aixo ens sera util per observar quins atributs tenen més pes.
+
 
 import seaborn as sns
 
@@ -105,9 +102,11 @@ relacio = sns.pairplot(dataset)
 
 # # Apartat (B): Primeres regressions
 
-
+# es pot utilitzar numpy per a calcular el mse
 def mse(v1, v2):
     return ((v1 - v2)**2).mean()
+
+print("MSE: ", mse(vector1, vector2))
 
 
 # Per a la regressió podeu utilitzar la llibreria sklearn:
@@ -128,15 +127,13 @@ def regression(x, y):
 
 # Primer estandaritzarem les nostres dades del dataset. Hem decidit mostrar un histograma per a cada atribut del nostre dataset amb les dades normalitzades i sense normalitzar, per entendre com afecta la normalització o estandaritzacio.
 
+
 def standarize(x_train):
     mean = x_train.mean(0)
     std = x_train.std(0)
     x_t = x_train - mean[None, :]
     x_t /= std[None, :]
     return x_t
-
-
-# In[15]:
 
 
 for i in range(x.shape[1]):
@@ -208,6 +205,7 @@ for i in range(x.shape[1]):
 
 # Un cop mostrats de manera adient, (en forma de taula, i/o de gràfics si la dimensionalitat ho permet) els resultats aconseguits amb la regressió, avaluarem de manera independent la idonietat de cadascun dels atributs.
 
+
 """ Per a assegurar-nos que el model s'ajusta be a dades noves, no vistes, 
 cal evaluar-lo en un conjunt de validacio (i un altre de test en situacions reals).
 Com que en aquest cas no en tenim, el generarem separant les dades en 
@@ -246,6 +244,7 @@ for i in range(x_train.shape[1]):
 
 # Ara observarem com canvia un cop hem estandaritzat les dades. Per estandartizar, cridem a la funció anterior standarize, i li pasem cada atribut del dataset, es a dir les dades de train i les de validació d'aquell atribut.
 
+
 for i in range(x_train.shape[1]):
     x_t = x_train[:,i] # seleccionem atribut i en conjunt de train
     x_v = x_val[:,i] # seleccionem atribut i en conjunt de val.
@@ -283,6 +282,9 @@ r2 = r2_score(y_test, y_pred) # calculem el r2 score
 
 plt.figure(figsize= (8,8))
 plt.scatter(y_test, y_pred, c='crimson')
+p1 = y_test
+p2 = y_pred
+plt.plot([p1, p2], [p1, p2], 'b-')
 plt.xlabel('True values')
 plt.ylabel('Predictions')
 plt.axis('equal')
@@ -295,8 +297,6 @@ print("---")
 
 
 # Si estandaritzem, el resultat no estara influenciat pel rang de les dades. Pero tot i aixi, veiem que estandaritzan obtenim un error mes alt, i un r2 score més baix.
-
-# selected_variables_index = [0,1,2]
 
 dataset_1 = load_dataset('data/Admission_Predict_Ver1.1.csv')
 dataset_1 = dataset_1.drop(['Serial No.', 'University Rating' ,'SOP', 'LOR ', 'Chance of Admit '], axis=1) # eliminem els atributs que no volem, deixant els que hem decidit son mes importants.
@@ -316,7 +316,9 @@ r2 = r2_score(y_test, y_pred) # calculem el r2 score
 
 plt.figure(figsize= (8,8))
 plt.scatter(y_test, y_pred, c='crimson')
-
+p1 = y_test
+p2 = y_pred
+plt.plot([p1, p2], [p1, p2], 'b-')
 plt.xlabel('True values')
 plt.ylabel('Predictions')
 plt.axis('equal')
@@ -330,7 +332,6 @@ print("---")
 
 # Si en canvi introduim tots els atributs veiem un resultat completament diferent:
 
-# selected_variables_index = [0,1,2]
 x_train, y_train, x_test, y_test = split_data(x, y)
 
 regr = regression(x_train, y_train)  #creem el objecte regresor
@@ -342,7 +343,9 @@ r2 = r2_score(y_test, y_pred) # calculem el r2 score
 
 plt.figure(figsize= (8,8))
 plt.scatter(y_test, y_pred, c='crimson')
-
+p1 = y_test
+p2 = y_pred
+plt.plot([p1, p2], [p1, p2], 'b-')
 plt.xlabel('True values')
 plt.ylabel('Predictions')
 plt.axis('equal')
@@ -401,6 +404,7 @@ plt.show()
 
 
 # # Apartat (A): El descens del gradient  
+
 
 
 class Regressor(object):
@@ -498,6 +502,7 @@ plt.show()
 
 # Podem optimitzar el regresor i despres predir utilitzant el regresor i veure com millora.
 
+
 import sys
 
 x_train, y_train, x_test, y_test = split_data(x, y)
@@ -531,11 +536,40 @@ print("R2 score total: %f" %(r2))
 
 plt.figure(figsize= (8,8))
 plt.scatter(y_test, y_pred, c='crimson')
-
+p1 = 1
+p2 = 0
+plt.plot([p1, p2], [p1, p2], 'b-')
 plt.xlabel('True values')
 plt.ylabel('Predictions')
 plt.axis('equal')
 plt.show()
+
+
+
+from sklearn.linear_model import SGDRegressor
+from sklearn.metrics import mean_squared_error
+
+x_train, y_train, x_test, y_test = split_data(x, y)
+
+
+regr = SGDRegressor(max_iter = 1000,penalty = "elasticnet",loss = 'huber',tol = 1e-3, average = True)
+regr.fit(x_train, y_train)
+y_pred = regr.predict(x_test)
+
+print("Mean Squared Error: ", mean_squared_error(y_test, y_pred))
+print("Coefficient of determination: ", r2_score(y_test, y_pred))
+
+plt.figure(figsize=(10,10))
+plt.scatter(y_test, y_pred, c='crimson')
+#     p1 = max(max(y_pred), max(y_test))
+p1 = 50
+p2 = 0
+plt.plot([p1, p2], [p1, p2], 'b-')
+plt.xlabel('True Values', fontsize=15)
+plt.ylabel('Predictions', fontsize=15)
+plt.axis('equal')
+plt.show()
+
 
 
 import sys
@@ -572,6 +606,8 @@ plt.figure(figsize= (8,8))
 
 for index, i in enumerate(sum_cost):
     plt.plot(range(epochs[index]), i)
+
+    
     
 plt.xlabel('Nombre de iteracions (Max_iter = %d)' %(max_iteracions))
 plt.ylabel('Cost')
@@ -581,8 +617,8 @@ plt.figure(figsize= (8,8))
 plt.plot(X2[:,1], y, "x")
 plt.plot(X2[:,1], X2 @ theta_final, "b")
 
-plt.xlabel('Dades ')
-plt.ylabel('Valor de theta')
+plt.xlabel('Predictions ')
+plt.ylabel('True values')
 plt.show()    
 
 
@@ -665,9 +701,6 @@ for i in range(1, 5):
 
 
 # L'últim pas serà validar el regressor trobat pel descent del gradient desenvolupat en aquest apartat visualment, aplicat a un model de recta i un model de pla. Per a això, caldrà considerar el millor atribut identificat en el primer punt de l'anterior entrega per visualitzar la línia regressora en 2D (podeu mostrar dades 2d amb la funció scatter). Després, dos dels atributs identificats a l'últim punt del primer exercici per visualitzar el pla regressor en 3D (En el cas 3D l’scatter s’ha de fer sobre una figura amb projecció 3D).
-
-
-get_ipython().run_line_magic('matplotlib', 'notebook')
 
 # Creem figura 3d
 from mpl_toolkits.mplot3d import axes3d, Axes3D
